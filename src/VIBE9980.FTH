@@ -80,19 +80,24 @@ HEX
 \ CMDNAME the command string, is built, found and executed
 CREATE CMDNAME    5 C,  CHAR $ C, CHAR $ C,  0 C, 0 C, 0 C,
 
+\ direct to video type 
+: VTYPE  ( addr len -- ) TUCK  VPOS SWAP VWRITE   VCOL +! ;
+
+CREATE PATH  16 ALLOT  PATH OFF 
+
 ( Editor Display )
 HEX 
-: MODE.    WIDTH 0 AT-XY  MODE @ 5F AND EMIT ;
+: MODE.    40 VCOL !  MODE @ 5F AND EMIT ;
  DECIMAL
-: BLANKS   BL FILL ; \ BF add
+: BLANKS   BL FILL ; 
+: PATH.    26 VCOL !   PATH COUNT VTYPE ;
 : PROMPT   0 19 AT-XY VPOS WIDTH BL VFILL ;
-: VTYPE    ( addr len -- ) TUCK  VPOS SWAP VWRITE   VCOL +! ;
 : SCR.     0 0 AT-XY S" Block: " VTYPE  SCR @ . ;
-: HEADER   SCR. MODE. ;
+: HEADER   SCR. PATH. MODE. ;
 : 16-S     S" ----------------" VTYPE ;
 : WIDTH-S  16-S 16-S 16-S ;
 : RULE     S" +---------" VTYPE ;
-: RULER    SPACE RULE RULE RULE RULE RULE RULE ." +---"  CR ;
+: RULER    SPACE RULE RULE RULE RULE RULE RULE S" +----" VTYPE CR ;
 : BORDER   SPACE WIDTH-S CR ;
 : ROW      ( addr -- addr') DUP LENGTH VTYPE 64 + ; \ FAST
 \ : ROW    ( addr -- addr') DUP LENGTH TYPE LENGTH + ;   \ SLOW
@@ -107,8 +112,8 @@ HEX
 ( Editor State Control )
 \ change cursor character to show mode as well
 : INSERT   'i MODE !         30 CURS ! ; 
-: REPLACE  'r MODE ! [CHAR] _ CURS ! ;
-: CMD      'c MODE !       31 CURS ! ;
+: REPLACE  'r MODE !  [CHAR] _ CURS ! ;
+: CMD      'c MODE !        31 CURS ! ;
 
 : BOUNDED   ( addr n -- ) 0 MAX MAXBLKS MIN SWAP ! ;
 : PREVBLOCK  SCR DUP @ 1- BOUNDED ;
@@ -191,15 +196,16 @@ HEX
 VARIABLE TP
 : TP+!  ( n ) TP +! TP @ 0 MAX  TP ! ; \ circular increment/decrement
 HEX 
-: TEMP  ( -- Vaddr) TP @ 64* C00 +  ; 
+: TEMP  ( -- Vaddr) TP @ 64* C00 +  ;  \ VDP used as line buffers
 DECIMAL 
 : YANK     1 TP+! SOL TEMP WIDTH VWRITE ; \ 
 : ERASELN  ( n ) 0 SWAP  WHERE  LENGTH BLANKS ;
 : PULLUP   NEXTLN SOL  BELOW  MOVE  15 ERASELN ;
 : DELINE   YANK PULLUP  UPDATE ;
 : PUSHDOWN Y @ 14 < IF SOL NEXTLN  BELOW MOVE  THEN ;
-: PASTE    TP @ 0= IF  BEEP EXIT THEN PUSHDOWN 
-           TEMP SOL WIDTH VREAD  -1 TP+!  UPDATE ;
+: (PASTE)  PUSHDOWN  TEMP SOL WIDTH VREAD  -1 TP+! ;
+: PASTE    TP @ 0= IF  BEEP EXIT THEN  
+           TP @ 0 ?DO  (PASTE) LOOP UPDATE ;
 
 ( Editor Wipe Block ) \ simplified by BFox
 HEX
@@ -241,12 +247,11 @@ DECIMAL
 
 : HANDLER  DUP  HANDLERWORD EXECUTE ;
 
-: CMDLOOP 
-  CMD BEGIN  KEYBOARD HANDLER  SCREEN  AGAIN ;
+: CMDLOOP   BEGIN  KEYBOARD HANDLER  SCREEN  AGAIN ;
 
 : VIBE ( n -- ) 
  \ ONLY EDITOR 
-  SCR ! DECIMAL PAGE HOME SCREEN  CMDLOOP ;
+  SCR ! DECIMAL PAGE ( HOME) CMD  SCREEN  CMDLOOP ;
 
 : EDIT   SCR @ VIBE ;
 
@@ -289,16 +294,16 @@ DECIMAL
 : $$i03  DROP DELETE ;            \ PC delete key
 : $$i08  DROP BACKSPACE ;         \ Backspace
 : $$i0D  DROP ENTER ;             \ Enter
-: $$i0F  DROP 31 CURS ! CMD ;     \ (esc) GOTO command mode
+: $$i0F  DROP CMD   ;             \ (esc) command mode
 : $$c5A  DROP WIPE ;              \ Z
 : $$c6F  DROP OPENDOWN DOWN ;     \ o
 : $$c4F  DROP UP OPENDOWN DOWN ;  \ O
-: $$c3A  DROP COMMANDLINE  ;      \ ':' command
+: $$c3A  DROP COMMANDLINE  ;      \ ':' vi style 
 \ : $$i7F  DROP BACKSPACE ;       \ DEL -- for Unix
 
 \ command line commands are just Forth words 
 \ duplicates in upper and lower case 
-: Q!    PROMPT ." Forth" CR .S  QUIT ;
+: Q!    PROMPT ." Forth" CR ( .S) ABORT ;
 : q!    Q! ;  
 
 : w     FLUSH  SCREEN ;
@@ -314,7 +319,9 @@ DECIMAL
 \ \\\\\\\\\\\\\\\\\\\\\\\\\\ VIBE ENDS \\\\\\\\\\\\\\\\\\\\\\\\\\
 \ VI command additions
 : USE ( <path>)   \ open a block file to use 
-  PARSE-NAME DUP 0> IF  OPEN-BLOCKS  SCR OFF  THEN ;
+  BHNDL @ IF  CLOSE-BLOCKS THEN 
+  PARSE-NAME DUP 0> 
+  IF 2DUP PATH PLACE  OPEN-BLOCKS  SCR OFF  THEN ;
 
 : LIST    ( n -- ) SCR ! PAGE SCREEN 50 18 AT-XY ;
 : INDEX   ( from to -- )
