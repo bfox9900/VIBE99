@@ -1,0 +1,78 @@
+VIBE80 Editor for Camel99 Forth
+--------------------------------
+Vibe 2.2 is a universial block editor written in ANS/ISO Forth by Sam Falvo.
+It is used here with written permission from the author. 
+
+Vibe99 began as a port of VIBE but has beene expanded to operate even
+more like vi. 
+
+It is VERY important to understand that it is NOT like modern editors.
+Some people love this way or working. Others ... not so much.
+
+IMPORTANT THINGS TO KNOW
+> VIBE99 works in 80 column mode and needs an F18 display or Classic99 Emulator.
+> VIBE99 works with a Forth BLOCK file, not DV80 text files.
+
+Starting VIBE80
+---------------
+1. With the editor assembler cartridge start CAMEL99 FORTH
+   Menu option 5 Run program file:  DSK1.CAMEL2xx  (xx is the version)
+
+2. Inside Forth type:  INCLUDE DSK2.VIBE99
+
+3. If you don't have a block file you must make one like this:
+   1st switch to decimal numbers:
+
+   DECIMAL  <enter>
+
+   50  S" DSK2.MYBLOCKS" MAKE-BLOCKS <enter>
+
+   This will create a 50K byte file make of 50 1K blocks on disk2.
+
+To start the editor type VI DSK2.MYBLOCKS  <enter>
+
+
+
+VIBE starts in COMMAND mode. This mode lets you navigate around the text.
+
+When you want to edit something you must switch to INSERT mode by
+pressing the lower case 'i'. (yes only lower case will work)
+
+In INSERT mode you can type new text into the Forth block.
+
+Command Mode keys
+ Q -- quits main loop, enter Forth interpreter for more commands
+^Z -- Same as Q
+ : -- puts cursor at command line below the editor screen  
+ 0 -- flushleft
+
+ i -- Enter Editing mode ( called INSERT)
+ I -- FLUSHLEFT INSERT
+
+ R -- REPLACE
+ h -- LEFT
+ j -- DOWN
+ k -- UP
+ l -- RIGHT
+
+<ctrl>f Page forward (next block) 
+<ctrl>b Page backward (previous block)
+
+ Z -- WIPE BLOCK
+ o -- open and put text in a new line below current line, until <Esc> hit
+ O -- open and put text in a new line above current line, until <Esc> hit
+ HOME = Goto col 0, line 0
+ $ -- Goto end of text in current line
+
+INSERT mode keys
+ ^D -- DELETE
+ ^H -- BACKSPACE
+ ^M   RETURN
+  ESC return to command mode
+  HOME -- Goto col 0, line 0
+\ In Forth interpreter
+:X   FLUSH BUFFERS to disk
+:WQ  Write buffers close-files and remove VIBE from dictionary
+
+\ DEL BACKSPACE  DEL -- for Unix
+
