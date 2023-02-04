@@ -23,10 +23,11 @@ the default text file used for source code by many TI-99 programs.
 2. Inside Forth type:  INCLUDE DSK2.VIBE99
 
 3. If you don't have a block file you must make one like this:
-   
-    DECIMAL  <enter>
-    80  S" DSK2.MYBLOCKS" MAKE-BLOCKS <enter>
 
+```   
+DECIMAL  <enter>
+80  S" DSK2.MYBLOCKS" MAKE-BLOCKS <enter>
+```
 
 This will create an 80K byte file on disk2.
 
