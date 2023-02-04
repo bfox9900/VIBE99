@@ -3,7 +3,7 @@ VIBE80 Editor for Camel99 Forth
 Vibe 2.2 is a universial block editor written in ANS/ISO Forth by Sam Falvo.
 It is used here with written permission from the author. 
 
-Vibe99 began as a port of VIBE but has beene expanded to operate even
+Vibe99 began as a port of VIBE but has been expanded to operate even
 more like vi. 
 
 It is VERY important to understand that it is NOT like modern editors.
