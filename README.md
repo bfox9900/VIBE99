@@ -9,13 +9,13 @@ VIBE99 operates on a specific file type on TI-99 that consists of 1K
 blocks of text or data. It does not use the DV80 file format that is
 the default text file used for source code by many TI-99 programs. 
 
-Hardware Requirements
+### Hardware Requirements
 - F18 display or Classic99 Emulator or any emulator that has F18 support
 - 32K expanded memory
 - TI-99 disk system 
 
 
-Starting VIBE80
+### Starting VIBE80
 ---------------
 1. With the editor assembler cartridge start CAMEL99 FORTH
    Menu option 5 Run program file:  DSK1.CAMEL2.69 or higher
