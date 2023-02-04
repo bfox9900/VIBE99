@@ -41,28 +41,32 @@ pressing the lower case 'i'. (yes only lower case will work)
 In INSERT mode you can type new text into the Forth block.
 
 Command Mode keys
- Q -- quits main loop, enter Forth interpreter for more commands
-^Z -- Same as Q
- : -- puts cursor at command line below the editor screen  
+
+Editing Keys 
+^Z -- quits main loop, enter Forth interpreter for more commands
+ : -- puts cursor at command line below the editor screen. 
+      Any Forth word can be entered 
  0 -- flushleft
+ $ -- goto end of line 
+ i -- Enter Editing mode. Show 'I' for insert mode top right
+ I -- flushleft and insert mode 
+ r -- replace one character at cursor (esc not needed)
 
- i -- Enter Editing mode ( called INSERT)
- I -- FLUSHLEFT INSERT
-
- R -- REPLACE
+Cursor movement 
  h -- LEFT
  j -- DOWN
  k -- UP
  l -- RIGHT
 
-<ctrl>f Page forward (next block) 
-<ctrl>b Page backward (previous block)
+BLOCK selection 
+ <ctrl>f Page forward (next block) 
+ <ctrl>b Page backward (previous block)
 
- Z -- WIPE BLOCK
+:n G  <enter> Select a block space required between number and 'G'
+
+ Z -- WIPE BLOCK with "Are you sure prompt"
  o -- open and put text in a new line below current line, until <Esc> hit
  O -- open and put text in a new line above current line, until <Esc> hit
- HOME = Goto col 0, line 0
- $ -- Goto end of text in current line
 
 INSERT mode keys
  ^D -- DELETE
@@ -74,5 +78,4 @@ INSERT mode keys
 :X   FLUSH BUFFERS to disk
 :WQ  Write buffers close-files and remove VIBE from dictionary
 
-\ DEL BACKSPACE  DEL -- for Unix
 
