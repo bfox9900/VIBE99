@@ -2,17 +2,29 @@
 Vibe 2.2 is a universial block editor written in ANS/ISO Forth by Sam Falvo.
 It is used here with written permission from the author. 
 
-Vibe99 began as a port of VIBE but has been expanded to operate even
-more like vi with more commands added and a ":" command line.
+Vibe99 began as a port of VIBE but has been expanded to operate more like vi. 
 
-VIBE99 operates on a specific file type on TI-99 that consists of 1K
-blocks of text or data. It does not use the DV80 file format that is
-the default text file used for source code by many TI-99 programs. 
+It is VERY important to understand that VIBE is NOT like modern editors.
+Like vi, VIBE has two modes. "Visual" mode used to cursor around and changes 
+pages and editing mode where you can change the actual text. 
+Some people love this way or working. Others ... not so much.
+On top of that VIBE is  "BLOCK" editor meaning it does not edit text files 
+but rather blocks of file space that are 1024 bytes in size. 
 
 ### Hardware Requirements
-- F18 display or Classic99 Emulator or any emulator that has F18 support
-- 32K expanded memory
-- TI-99 disk system 
+- needs an F18 display for 80 columns or the Classic99 Emulator
+- needs the editor Assembler cartridge
+
+### Software Requirements to compile VIBE 
+- Camel99 Forth version 2.69 or greater
+- Camel99 Forth library disk or the following files on DSK1 
+   - DSK1.80COL
+   - DSK1.RKEY  
+   - DSK1.BLOCKS
+   - DSK1.TRAILING
+   - DSK1.MARKER
+   - DSK1.WORDLISTS
+
 
 
 ### Starting VIBE80
