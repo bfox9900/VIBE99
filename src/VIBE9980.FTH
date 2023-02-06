@@ -198,7 +198,7 @@ VARIABLE TP
 HEX 
 : TEMP  ( -- Vaddr) TP @ 64* C00 +  ;  \ VDP used as line buffers
 DECIMAL 
-: YANK     1 TP+! SOL TEMP WIDTH VWRITE ; \ 
+: YANK     1 TP+! SOL TEMP WIDTH VWRITE DOWN ; 
 : ERASELN  ( n ) 0 SWAP  WHERE  LENGTH BLANKS ;
 : PULLUP   NEXTLN SOL  BELOW  MOVE  15 ERASELN ;
 : DELINE   YANK PULLUP  UPDATE ;
@@ -242,28 +242,25 @@ DECIMAL
 
 \ key command interpreter
 \ : .CMDNAME    68 0 AT-XY CMDNAME COUNT TYPE ; \ debugging
-: HANDLERWORD ( c --)
-  NAME!  CMDNAME FIND 0= IF  DROP NOMAPPING THEN ;
-
+: HANDLERWORD ( c --) NAME!  CMDNAME FIND 0= IF  DROP NOMAPPING THEN ;
 : HANDLER  DUP  HANDLERWORD EXECUTE ;
-
 : CMDLOOP   BEGIN  KEYBOARD HANDLER  SCREEN  AGAIN ;
-
-: VIBE ( n -- ) 
- \ ONLY EDITOR 
-  SCR ! DECIMAL PAGE ( HOME) CMD  SCREEN  CMDLOOP ;
-
+: VIBE ( n -- ) ONLY EDITOR  SCR ! DECIMAL PAGE  CMD SCREEN  CMDLOOP ;
 : EDIT   SCR @ VIBE ;
 
 \ ':' line interpreter for that real vi sensation
 : INPUT       PAD DUP LENGTH ACCEPT ;
 : COMMANDLINE PROMPT ." :" INPUT EVALUATE  SCREEN ;
 
+: .NOTSAVED  ." Not saved. Use FLUSH to update disk." ;
+: .FORTH     PROMPT ." Forth" ;
+: CONSOLE    ONLY FORTH DEFINITIONS ALSO EDITOR  ABORT ;
+
 ( VI Command mode keys)
 ( Place at end for faster lookup )
 : $$c06  DROP NEXTBLOCK ;         \ ^F  ( CHANGE FROM VIBE )
 : $$c02  DROP PREVBLOCK ;         \ ^B  ( CHANGE FROM VIBE )
-: $$c1A  DROP FLUSH PAGE ABORT ;  \ ^Z to command shell 
+: $$c1A  DROP PAGE .NOTSAVED CONSOLE ; \ ^Z to command shell 
 : $$c24  DROP EOTEXT ;            \ $  goto end of line
 : $$c30  DROP FLUSHLEFT ;         \ 0  goto start of line   
 
@@ -303,14 +300,14 @@ DECIMAL
 
 \ command line commands are just Forth words 
 \ duplicates in upper and lower case 
-: Q!    PROMPT ." Forth" CR ( .S) ABORT ;
+: Q!    .FORTH  CR .NOTSAVED CONSOLE ;
 : q!    Q! ;  
 
 : w     FLUSH  SCREEN ;
-: W   w  ; 
+: W     w ; 
 
-: wq    FLUSH  q! ;
-: WQ  wq ; 
+: wq    FLUSH .FORTH CONSOLE ;
+: WQ    wq ; 
 
 : vibe  VIBE ;
 : G     ( n -- ) VIBE ;
@@ -331,4 +328,4 @@ DECIMAL
 SCR OFF
 HERE SWAP - DECIMAL . .( bytes)
 
-\ USE DSK7.BLOCKS 
+\ USE DSK7.FBLOCKS 
