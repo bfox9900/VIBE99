@@ -25,23 +25,29 @@ but rather blocks of file space that are 1024 bytes in size.
    - DSK1.MARKER
    - DSK1.WORDLISTS
 
-
-
-### Starting VIBE80
----------------
+### Compiling VIBE99
+-----------------
 1. With the editor assembler cartridge start CAMEL99 FORTH
-   Menu option 5 Run program file:  DSK1.CAMEL2.69 or higher
+   Menu option 5 Run program file:  DSK1.CAMEL99  (xx is the version)
 
-2. Inside Forth type:  INCLUDE DSK2.VIBE99
+2. Place the VIBE99 source file in DSK2. (any disk will work)
+3. Start CAMEL99 Forth at the E/A Run program file with: DSK1.CAMEL99 
 
-3. If you don't have a block file you must make one like this:
+4. Inside Forth type:  INCLUDE DSK2.VIBE99
 
-```   
-DECIMAL  <enter>
-80  S" DSK2.MYBLOCKS" MAKE-BLOCKS <enter>
-```
+5. If you don't have a block file you must make one like this:
 
-This will create an 80K byte file on disk2.
+   DECIMAL  <enter>
+   80  S" DSK2.MYBLOCKS" MAKE-BLOCKS <enter>
+   ( mind the space after S"   It is required)
 
-To start the editor type VI DSK2.MYBLOCKS  <enter>
+This will create a 80K byte file make of 80 1K blocks on disk2.
+
+6. Select your block file with: 
+
+    USE DSK2.MYBLOCKS   
+
+7. Enter the editor at the last block accessed with EDIT (starts at zero)
+
+
 
