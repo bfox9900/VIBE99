@@ -198,10 +198,11 @@ VARIABLE TP
 HEX 
 : TEMP  ( -- Vaddr) TP @ 64* C00 +  ;  \ VDP used as line buffers
 DECIMAL 
-: YANK     1 TP+! SOL TEMP WIDTH VWRITE DOWN ; 
+: CUT      1 TP+! SOL TEMP WIDTH VWRITE UPDATE ;
+: YANK     CUT DOWN ; 
 : ERASELN  ( n ) 0 SWAP  WHERE  LENGTH BLANKS ;
 : PULLUP   NEXTLN SOL  BELOW  MOVE  15 ERASELN ;
-: DELINE   YANK PULLUP  UPDATE ;
+: DELINE   CUT PULLUP   ;
 : PUSHDOWN Y @ 14 < IF SOL NEXTLN  BELOW MOVE  THEN ;
 : (PASTE)  PUSHDOWN  TEMP SOL WIDTH VREAD  -1 TP+! ;
 : PASTE    TP @ 0= IF  BEEP EXIT THEN  
@@ -245,7 +246,7 @@ DECIMAL
 : HANDLERWORD ( c --) NAME!  CMDNAME FIND 0= IF  DROP NOMAPPING THEN ;
 : HANDLER  DUP  HANDLERWORD EXECUTE ;
 : CMDLOOP   BEGIN  KEYBOARD HANDLER  SCREEN  AGAIN ;
-: VIBE ( n -- ) ONLY EDITOR  SCR ! DECIMAL PAGE  CMD SCREEN  CMDLOOP ;
+: VIBE ( n -- )  SCR ! DECIMAL PAGE  HOME CMD SCREEN  CMDLOOP ;
 : EDIT   SCR @ VIBE ;
 
 \ ':' line interpreter for that real vi sensation
@@ -274,7 +275,7 @@ DECIMAL
 \ : $$c5C  DROP TOGGLESHADOW ;    \ \
 : $$c61  DROP NEXT REPLACE ;      \ a  append after cursor  
 : $$c62  DROP PREVWORD  ;         \ b  
-: $$c64  DROP KEY 'd = IF DELINE THEN ;   \ dd delete line 
+: $$c64  DROP DELINE ;            \ d  delete line 
 : $$c68  DROP LEFT ;              \ h
 : $$c69  DROP INSERT ;            \ i
 : $$c6A  DROP DOWN ;              \ j
@@ -318,7 +319,7 @@ DECIMAL
 : USE ( <path>)   \ open a block file to use 
   BHNDL @ IF  CLOSE-BLOCKS THEN 
   PARSE-NAME DUP 0> 
-  IF 2DUP PATH PLACE  OPEN-BLOCKS  SCR OFF  THEN ;
+  IF 2DUP PATH PLACE  OPEN-BLOCKS  SCR OFF  HOME  THEN ;
 
 : LIST    ( n -- ) SCR ! PAGE SCREEN 50 18 AT-XY ;
 : INDEX   ( from to -- )
